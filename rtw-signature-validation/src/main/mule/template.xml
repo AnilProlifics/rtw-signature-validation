@@ -14,11 +14,6 @@
 			<set-variable variableName="signature" value="{{{signatureExpression}}}"/>
 			<set-variable variableName="webhookURL" value="{{{webhookURL}}}"/>
 			<set-variable variableName="secretKey" value="{{{secretKey}}}"/>
-			<logger level="INFO" doc:name="Logger" doc:id="2537a686-5462-4010-a880-6f04a00cb38d" message="Signature in the request header is: #[vars.signatureExpression]"/>
-			<logger level="INFO" doc:name="Logger" doc:id="6268dcfe-70e5-41f0-a012-5a5d94360c5d" message="Request URL is: {{{webhookURL}}}"/>
-			<logger level="INFO" doc:name="Logger" doc:id="468ce006-9f68-4838-8e32-e20e9c97f165" message="Secret key is: #[vars.secretKey]"/>
-			<logger level="INFO" doc:name="Logger" doc:id="e7ee6be1-3279-475e-b857-5487e4172bfb" message="payload is: #[payload]"/>
-			<logger level="INFO" doc:name="Logger" doc:id="63e56192-06d6-4b62-a83a-dbc562327cd9" message="Method is: #[attributes.method]"/>
 			<set-variable variableName="calculatedSign" value = '#[%dw 2.0
 output application/json
 import * from dw::Crypto
@@ -31,8 +26,7 @@ var method = attributes.method
 var stringToSign = method ++ ":" ++ MD5digest ++ ":" ++ contentType ++ ":" ++ vars.webhookURL
 
 ---
-toBase64(HMACBinary(vars.secretKey, stringToSign, "HmacSHA256"))]'/>	
-<logger level="INFO" doc:name="Logger" doc:id="e286ff03-1c9d-49f1-a7a3-a03ffd7f64e9" message="Calculated sign is: #[vars.calculatedSign]"/>		
+toBase64(HMACBinary(vars.secretKey, stringToSign, "HmacSHA256"))]'/>		
 <choice doc:name="Choice" doc:id="5b4e7543-aa65-4811-a386-48bf4a6ffd79" >
 			<when expression="#[vars.signature == vars.calculatedSign]">
 				<http-policy:execute-next/>

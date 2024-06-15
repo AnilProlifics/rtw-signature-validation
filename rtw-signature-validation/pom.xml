@@ -6,7 +6,7 @@
 
     <groupId>f4e3bd96-c094-4336-a4a9-c39bfdcc3616</groupId>
     <artifactId>rtw-signature-validation</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
 
     <name>RTW Signature Validator</name>
     <description>Validates the RTW signature in request headers to ensure the authenticity of incoming requests for enhanced security</description>
