@@ -1,0 +1,24 @@
+{
+  "configs": [
+    "template.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "f4e3bd96-c094-4336-a4a9-c39bfdcc3616:rtw-signature-validation:1.0.10",
+  "minMuleVersion": "4.1.1",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {
+      "groupId": "f4e3bd96-c094-4336-a4a9-c39bfdcc3616",
+      "classifier": "mule-policy",
+      "artifactId": "rtw-signature-validation",
+      "type": "jar",
+      "version": "1.0.10"
+    }
+  }
+}
