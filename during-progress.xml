@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http-policy="http://www.mulesoft.org/schema/mule/http-policy"
+      xmlns:http-transform="http://www.mulesoft.org/schema/mule/http-policy-transform"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd
+               http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.org/schema/mule/http-policy-transform/current/mule-http-policy-transform.xsd">
+
+
+    <http-policy:proxy name="{{{policyId}}}-custom-policy">
+        <http-policy:source>
+			<set-variable variableName="signatureExpression" value="{{{signatureExpression}}}"/>
+			<set-variable variableName="webhookURL" value="{{{webhookURL}}}"/>
+			<set-variable variableName="secretKey" value="{{{secretKey}}}"/>
+<!-- 			<set-variable variableName="payloads" value "#[payload]"/> -->
+			<set-variable variableName="method" value "#[attributes.method]"/>
+			<set-variable variableName="contentType" value "#['application/json']"/>
+			
+			<set-variable variableName="calculatedSign" value '#[%dw 2.0
+output application/json
+import * from dw::Crypto
+import * from dw::core::Strings
+import toBase64 from dw::core::Binaries
+var varPayload= replaceAll(replaceAll(write(payload, "application/json"),"\n","")," ","")
+var MD5digest = toBase64(hashWith(varPayload as Binary,"MD5"))
+var contentType = "application/json"
+var endpointUrl = "https://h65tsvace0.execute-api.eu-west-1.amazonaws.com/webhook-test-receiver"
+var method = vars.method
+var stringToSign = method ++ ":" ++ MD5digest ++ ":" ++ contentType ++ ":" ++ endpointUrl
+
+---
+toBase64(HMACBinary("secretkey", stringToSign, "HmacSHA256"))]'/>
+
+<choice>
+<when expression="#[ if(vars.signatureExpression == vars.calculatedSign)]">>
+ <http-policy:execute-next/>
+</when>
+<otherwise>
+			<error-handler>
+				<on-error-continue>
+		            <http-transform:set-response statusCode="400">
+		                <http-transform:body>#[ 'Bad Request. The request is not authentic.' ]</http-transform:body>
+		                <http-transform:headers>#[ {'New-Header': 'Hello World!'} ]</http-transform:headers>
+		            </http-transform:set-response>
+		        </on-error-continue>
+		    </error-handler>
+</otherwise>
+</choice>
+		
+			
+           
+
+
+
+        </http-policy:source>
+    </http-policy:proxy>
+</mule>
